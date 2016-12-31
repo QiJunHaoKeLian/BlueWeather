@@ -1,5 +1,6 @@
 package com.blueweather.android;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import com.blueweather.android.gson.Forecast;
 import com.blueweather.android.gson.Weather;
+import com.blueweather.android.service.AutoUpdateService;
 import com.blueweather.android.util.HttpUtil;
 import com.blueweather.android.util.Utility;
 import com.bumptech.glide.Glide;
@@ -217,9 +219,13 @@ public class WeatherActivity extends AppCompatActivity {
             minText.setText(forecast.temperature.min);
             forecastLayout.addView(view);
         }
-        if (weather.aqi != null) {
+        if (weather.aqi != null&&"ok".equals(weather.status)) {
             aqiText.setText(weather.aqi.city.aqi);
             pm25Text.setText(weather.aqi.city.pm25);
+            Intent intent=new Intent(this, AutoUpdateService.class);
+            startService(intent);
+        }else{
+            Toast.makeText(WeatherActivity.this,"获取天气失败",Toast.LENGTH_SHORT).show();
         }
         String comfort = "舒适度：" + weather.suggestion.comfort.info;
         String carWash = "洗车指数：" + weather.suggestion.carWash.info;
